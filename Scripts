@@ -1,1 +1,20 @@
 -- Comandos Utilizados
+
+--Verificar caminho de dos parâmetros de configuração da instação do banco
+SELECT * FROM pg_config;
+
+--Verificar informação dos Bancos
+select * from pg_stat_database;
+
+-- Criado um User com todos acessor - SuperUser / Para ser usado nos exemplos a seguir
+CREATE ROLE "User_DEV" WITH
+	LOGIN
+	SUPERUSER
+	CREATEDB
+	CREATEROLE
+	INHERIT
+	REPLICATION
+	CONNECTION LIMIT -1
+	PASSWORD 'xxxxxx';
+COMMENT ON ROLE "User_DEV" IS 'Usuário para Banco DEV';
+
