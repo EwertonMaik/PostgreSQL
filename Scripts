@@ -21,3 +21,53 @@ CREATE ROLE "User_DEV" WITH
 	PASSWORD 'xxxxxx';
 COMMENT ON ROLE "User_DEV" IS 'Usuário para Banco DEV';
 
+-- Criado Uma TableSpace para ser armazenado apenas os Objetos do banco DEV e usuário anterior criado como proprietário.
+CREATE TABLESPACE "pgTB_DEV"
+  OWNER "User_DEV"
+  LOCATION 'C:\TablespacePG_DEV';
+
+ALTER TABLESPACE "pgTB_DEV"
+  OWNER TO "User_DEV";
+
+COMMENT ON TABLESPACE "pgTB_DEV"
+  IS 'Tablespace para o Banco DEV';
+
+
+-- Criado Banco DEV, proprietário User_DEV e Tablespace pgTB_DEV'
+CREATE DATABASE "DEV"
+    WITH 
+    OWNER = "User_DEV"
+    TEMPLATE = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Portuguese_Brazil.1252'
+    LC_CTYPE = 'Portuguese_Brazil.1252'
+    TABLESPACE = "pgTB_DEV"
+    CONNECTION LIMIT = -1;
+COMMENT ON DATABASE "DEV"
+    IS 'Banco DEV, proprietário User_DEV e Tablespace pgTB_DEV';
+
+--Criado um Esquema Privado para o Banco DEV
+CREATE SCHEMA dev
+    AUTHORIZATION "User_DEV";
+COMMENT ON SCHEMA dev
+    IS 'Esquema privado para Objetos do Banco DEV';
+    
+-- Excluído o esquema publico do PostgreSQL da base DEV
+DROP SCHEMA public ;
+
+-- Criado Tabela com Primary Key, Default e Index na PK, Tabelas e Index Salvo na TB - pgTB_DEV
+CREATE TABLE dev."Produto"
+(
+    id_prod integer NOT NULL GENERATED ALWAYS AS IDENTITY,
+    nm_prod character varying(100) NOT NULL,
+    tp_prod integer NOT NULL,
+    dt_cad_prod date NOT NULL DEFAULT CURRENT_DATE,
+    CONSTRAINT "IX_id_prod" PRIMARY KEY (id_prod)
+        USING INDEX TABLESPACE "pgTB_DEV"
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE "pgTB_DEV";
+ALTER TABLE dev."Produto"
+    OWNER to "User_DEV";
