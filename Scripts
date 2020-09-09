@@ -1,5 +1,8 @@
 -- Comandos Utilizados
 
+--Caminho do arquivo de Configuração da Instação
+C:\Program Files\PostgreSQL\11\data\pg_hba.conf
+
 --Verificar caminho de dos parâmetros de configuração da instação do banco
 SELECT * FROM pg_config;
 
