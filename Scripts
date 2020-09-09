@@ -55,14 +55,14 @@ COMMENT ON SCHEMA dev
 -- Excluído o esquema publico do PostgreSQL da base DEV
 DROP SCHEMA public ;
 
--- Criado Tabela com Primary Key, Default e Index na PK, Tabelas e Index Salvo na TB - pgTB_DEV
+-- Criado Tabela com Primary Key, Default Salvo na TB - pgTB_DEV
 CREATE TABLE dev."Produto"
 (
     id_prod integer NOT NULL GENERATED ALWAYS AS IDENTITY,
     nm_prod character varying(100) NOT NULL,
     tp_prod integer NOT NULL,
-    dt_cad_prod date NOT NULL DEFAULT CURRENT_DATE,
-    CONSTRAINT "IX_id_prod" PRIMARY KEY (id_prod)
+    dt_cad_prod date NOT NULL CONSTRAINT DF_Produto_dt_cad_prod DEFAULT CURRENT_DATE,
+    CONSTRAINT "id_prod" PRIMARY KEY (id_prod)
         USING INDEX TABLESPACE "pgTB_DEV"
 )
 WITH (
@@ -71,3 +71,28 @@ WITH (
 TABLESPACE "pgTB_DEV";
 ALTER TABLE dev."Produto"
     OWNER to "User_DEV";
+
+--Excluir tabela Produto
+DROP TABLE dev."Produto";
+
+--Adicionando uma Constraint UNIQUE para o campo id_prod
+ALTER TABLE dev."Produto"
+    ADD CONSTRAINT "id_prod" UNIQUE (id_prod)
+    USING INDEX TABLESPACE "pgTB_DEV";
+    
+-- Renomeando a constraint id_prod
+ALTER TABLE dev."Produto"
+    RENAME CONSTRAINT "IX_id_prod" TO "UNIQUE_id_prod";
+
+-- Criado index Clustered, com algorito de Busca BTREE
+CREATE INDEX ix_produto_id_prod
+    ON dev."Produto" USING btree
+    (id_prod ASC NULLS LAST)
+    WITH (FILLFACTOR=97)
+    TABLESPACE "pgTB_DEV";
+
+ALTER TABLE dev."Produto"
+    CLUSTER ON ix_produto_id_prod;
+
+--Drop Index
+DROP INDEX dev.ix_produto_id_prod;
