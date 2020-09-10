@@ -177,6 +177,16 @@ $$;
 --Executando Procedure
 CALL dev.proc_del_prod(7);
 
+-- IN = Entrada / OUT = SAÍDA / INOUT = ENTRADA e SAÍDA
+-- Procedure para passar parametro de entrada de código de produto e retornar o o nome do produto.
+CREATE OR REPLACE PROCEDURE dev.proc_find_prod(p_id_prod integer, p_nm_prod INOUT varchar(100))
+LANGUAGE plpgsql --plpgsql / SQL
+AS $$
+	BEGIN
+	p_nm_prod := (SELECT nm_prod FROM dev."Produto" WHERE id_prod = p_id_prod);
+	END;
+$$;
 
-
+-- Executar procedure
+CALL dev.proc_find_prod(2, null);
 
