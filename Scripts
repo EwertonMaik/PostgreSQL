@@ -96,3 +96,38 @@ ALTER TABLE dev."Produto"
 
 --Drop Index
 DROP INDEX dev.ix_produto_id_prod;
+
+-- Validando um Insert
+insert into dev."Produto" (nm_prod, tp_prod) values ('FACA', 1);
+explain select * from dev."Produto";
+
+-- Criado Tabela Tipo Produto
+CREATE TABLE dev."TipoProd" (
+    id_tipoprod integer NOT NULL GENERATED ALWAYS AS IDENTITY,
+    nm_tipo character varying(50) NOT NULL,
+    dt_cad_tipo date NOT NULL CONSTRAINT DF_TipoProd_dt_cad_tipo DEFAULT CURRENT_DATE,
+    CONSTRAINT "id_tipoprod" PRIMARY KEY (id_tipoprod)
+        USING INDEX TABLESPACE "pgTB_DEV")
+WITH ( OIDS = FALSE ) TABLESPACE "pgTB_DEV";
+ALTER TABLE dev."Produto" OWNER to "User_DEV";
+
+-- Adicionando 2 Tipos
+insert into dev."TipoProd" (nm_tipo) values ('Alimentício');
+insert into dev."TipoProd" (nm_tipo) values ('Utensílios de Cozinha');
+
+-- Definindo campo tp_prod para aceitar NULL para poder criar uma FK
+ALTER TABLE dev."Produto" ALTER COLUMN tp_prod DROP NOT NULL;
+
+-- Criando uma FK na tabela Produto com o TipoProd
+ALTER TABLE dev."Produto"
+    ADD CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod" FOREIGN KEY (id_prod)
+    REFERENCES dev."TipoProd" (id_tipoprod) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+COMMENT ON CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod" ON dev."Produto"
+    IS 'FK tabela TipoProd com TIpoProd';
+
+-- Alterando a FK para Validate, devido ter sido criada NOT VALID
+ALTER TABLE dev."Produto" VALIDATE CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod";
+
