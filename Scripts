@@ -120,14 +120,22 @@ ALTER TABLE dev."Produto" ALTER COLUMN tp_prod DROP NOT NULL;
 
 -- Criando uma FK na tabela Produto com o TipoProd
 ALTER TABLE dev."Produto"
-    ADD CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod" FOREIGN KEY (id_prod)
+    ADD CONSTRAINT "FK_Produto_tp_prod_TipoProd_id_tipoprod" FOREIGN KEY (tp_prod)
     REFERENCES dev."TipoProd" (id_tipoprod) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
-COMMENT ON CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod" ON dev."Produto"
-    IS 'FK tabela TipoProd com TIpoProd';
+COMMENT ON CONSTRAINT "FK_Produto_tp_prod_TipoProd_id_tipoprod" ON dev."Produto"
+    IS 'FK tabela Produto com TIpoProd';
+
+-- Renomeando nome FK
+ALTER TABLE dev."Produto" RENAME CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod" TO "FK_Produto_tp_prod_TipoProd_id_tipoprod";
+
+-- Excluíndo FK
+ALTER TABLE dev."Produto" DROP CONSTRAINT "FK_Produto_tp_prod_TipoProd_id_tipoprod";
 
 -- Alterando a FK para Validate, devido ter sido criada NOT VALID
-ALTER TABLE dev."Produto" VALIDATE CONSTRAINT "FK_Produto_id_prod_TipoProd_id_tipoprod";
+ALTER TABLE dev."Produto" VALIDATE CONSTRAINT "FK_Produto_tp_prod_TipoProd_id_tipoprod";
 
+-- Alterando campo tp_prod para não aceitar null novamente
+ALTER TABLE dev."Produto" ALTER COLUMN tp_prod SET NOT NULL;
