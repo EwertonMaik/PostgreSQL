@@ -139,3 +139,44 @@ ALTER TABLE dev."Produto" VALIDATE CONSTRAINT "FK_Produto_tp_prod_TipoProd_id_ti
 
 -- Alterando campo tp_prod para não aceitar null novamente
 ALTER TABLE dev."Produto" ALTER COLUMN tp_prod SET NOT NULL;
+
+-- Criado Procedure para Adicionar Produto
+CREATE PROCEDURE dev.proc_add_prod(p_nm_prod varchar(100), p_tp_prod integer)
+LANGUAGE plpgsql --plpgsql / SQL
+AS $$
+	BEGIN
+	INSERT INTO dev."Produto" (nm_prod, tp_prod) VALUES (p_nm_prod, p_tp_prod);
+	END;
+$$;
+
+-- Executando procedure
+CALL dev.proc_add_prod('TRIGO', 2);
+
+-- Procedure para atualizar Descrição Produto
+CREATE PROCEDURE dev.proc_update_prod(p_id_prod integer, p_nm_prod varchar(100))
+LANGUAGE plpgsql --plpgsql / SQL
+AS $$
+	BEGIN
+	UPDATE dev."Produto" SET nm_prod = p_nm_prod
+	WHERE id_prod = p_id_prod;
+	END;
+$$;
+
+--Executando procedure
+CALL dev.proc_update_prod(7, 'TRIGO 1 KG');
+
+--Procedure para Excluir Produto
+CREATE PROCEDURE dev.proc_del_prod(p_id_prod integer)
+LANGUAGE plpgsql --plpgsql / SQL
+AS $$
+	BEGIN
+	DELETE FROM dev."Produto" WHERE id_prod = p_id_prod;
+	END;
+$$;
+
+--Executando Procedure
+CALL dev.proc_del_prod(7);
+
+
+
+
