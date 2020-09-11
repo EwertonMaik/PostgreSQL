@@ -220,3 +220,12 @@ $$ LANGUAGE plpgsql;
 -- Executando função
 select dev.func_prod2(1);
 
+-- Criado Visualização
+CREATE VIEW dev.view_produtos
+AS
+	SELECT
+	a.id_prod ID, a.nm_prod NOME, a.tp_prod ID_TIPO, b.nm_tipo TIPO, a.dt_cad_prod DATA_CADASTRO
+	FROM dev."Produto" as a
+	LEFT JOIN dev."TipoProd" as b ON (a.tp_prod = b.id_tipoprod);
+
+select * from dev.view_produtos;
