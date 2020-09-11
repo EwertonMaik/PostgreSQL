@@ -190,7 +190,6 @@ $$;
 -- Executar procedure
 CALL dev.proc_find_prod(2, null);
 
-
 -- Criado Função, recebe parâmetro entrada
 CREATE OR REPLACE FUNCTION dev.func_prod (p_id_prod int) RETURNS varchar AS $$
 DECLARE
@@ -247,4 +246,60 @@ select * from dev.materialized_view_produtos;
 -- Comando para Atualizar os dados na View Materialized
 REFRESH MATERIALIZED VIEW dev.materialized_view_produtos;
 
+-- Criado uma tabela com base em um select em outra /  Cria e Copia também os registros
+CREATE TABLE dev.Produto_Log_Auditoria AS SELECT * FROM dev."Produto";
 
+-- Truncado as duas tabelas para registrar novos registros e validar + o RESTART IDENTITY para zerar a sequencia da chave
+TRUNCATE TABLE dev."Produto" RESTART IDENTITY;
+TRUNCATE TABLE dev.Produto_log_auditoria RESTART IDENTITY;
+
+--Adicionado um campo na tabela com uma DF para registrar data e hora.
+ALTER TABLE dev.produto_log_auditoria ADD COLUMN data_hora_log timestamp with time zone NOT NULL
+CONSTRAINT DF_produto_log_auditoria_data_hora_log DEFAULT current_timestamp;
+
+-- adicionado o campo na tabela produto_log_auditoria, para identificar o tipo da operação do LOG
+-- adiciona um constraint de check também para validar
+ALTER TABLE dev.produto_log_auditoria
+    ADD COLUMN operacao character varying NOT NULL;
+ALTER TABLE dev.produto_log_auditoria
+    ADD CONSTRAINT operacao_check
+	CHECK (operacao = 'INSERT' OR operacao = 'UPDATE' OR operacao = 'DELETE');
+	
+-- Criado Função de retorno Trigger para ser chamado na trigger que será criado em seguida
+CREATE OR REPLACE FUNCTION dev.func_trigger_produto_log_auditoria()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF (TG_OP = 'INSERT') THEN 
+		INSERT INTO dev.produto_log_auditoria (id_prod, nm_prod, tp_prod, dt_cad_prod, data_hora_log, operacao)
+		VALUES (new.id_prod, new.nm_prod, new.tp_prod, new.dt_cad_prod, CURRENT_TIMESTAMP, 'INSERT');
+	RETURN NEW;
+		
+	ELSIF (TG_OP = 'UPDATE') THEN
+		INSERT INTO dev.produto_log_auditoria (id_prod, nm_prod, tp_prod, dt_cad_prod, data_hora_log, operacao)
+		VALUES (new.id_prod, new.nm_prod, new.tp_prod, new.dt_cad_prod, CURRENT_TIMESTAMP, 'UPDATE');
+	RETURN NEW;
+	
+	ELSIF (TG_OP = 'DELETE') THEN
+		INSERT INTO dev.produto_log_auditoria (id_prod, nm_prod, tp_prod, dt_cad_prod, data_hora_log, operacao)
+		VALUES (old.id_prod, old.nm_prod, old.tp_prod, old.dt_cad_prod, CURRENT_TIMESTAMP, 'DELETE');
+	RETURN OLD;
+	END IF;
+	
+	RETURN NULL;
+END;
+$$LANGUAGE PLPGSQL;
+
+-- Criado Trigger na tabela Produto que executa a função dev.func_trigger_produto_log_auditoria()
+CREATE TRIGGER Trigger_Produto
+AFTER INSERT OR UPDATE OR DELETE ON dev."Produto"
+FOR EACH ROW
+EXECUTE PROCEDURE dev.func_trigger_produto_log_auditoria();
+
+-- Validando
+-- realizado a inseção, atualização e delete de registro
+call dev.proc_add_prod('ARROZ', 1);
+call dev.proc_update_prod(1, 'ARROZ TIO ICO');
+call dev.proc_del_prod(1);
+
+--Conferindo na tabela de Log
+select * from dev.Produto_Log_Auditoria;
