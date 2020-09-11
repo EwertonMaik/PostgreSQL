@@ -229,3 +229,22 @@ AS
 	LEFT JOIN dev."TipoProd" as b ON (a.tp_prod = b.id_tipoprod);
 
 select * from dev.view_produtos;
+
+-- Criado View Materialized
+CREATE MATERIALIZED VIEW dev.materialized_view_produtos
+AS
+	SELECT
+	a.id_prod ID, a.nm_prod NOME, a.tp_prod ID_TIPO, b.nm_tipo TIPO, a.dt_cad_prod DATA_CADASTRO
+	FROM dev."Produto" as a
+	LEFT JOIN dev."TipoProd" as b ON (a.tp_prod = b.id_tipoprod);
+
+-- Adicionado um registro na tabela de produto
+CALL dev.proc_add_prod('Pipoca', 1);
+
+--Esse registro não aparece aindam na view Materializada
+select * from dev.materialized_view_produtos;
+
+-- Comando para Atualizar os dados na View Materialized
+REFRESH MATERIALIZED VIEW dev.materialized_view_produtos;
+
+
