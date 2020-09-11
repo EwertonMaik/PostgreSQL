@@ -190,3 +190,33 @@ $$;
 -- Executar procedure
 CALL dev.proc_find_prod(2, null);
 
+
+-- Criado Função, recebe parâmetro entrada
+CREATE OR REPLACE FUNCTION dev.func_prod (p_id_prod int) RETURNS varchar AS $$
+DECLARE
+	p_nm_prod varchar;
+BEGIN
+	p_nm_prod := (select nm_prod from dev."Produto" where id_prod = p_id_prod);
+	p_nm_prod := 'Produto: ' || p_nm_prod || ' é barato!';
+	RETURN p_nm_prod;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Executando função
+select dev.func_prod(1);
+
+-- Criando a mesma função anterior com a Declaração da variavel no bloco DECLARE
+CREATE OR REPLACE FUNCTION dev.func_prod2 (int) RETURNS varchar AS $$
+DECLARE
+	p_id_prod ALIAS FOR $1;
+	p_nm_prod varchar;
+BEGIN
+	p_nm_prod := (select nm_prod from dev."Produto" where id_prod = p_id_prod);
+	p_nm_prod := 'Produto: ' || p_nm_prod || ' é barato!';
+	RETURN p_nm_prod;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Executando função
+select dev.func_prod2(1);
+
