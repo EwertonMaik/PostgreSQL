@@ -18,3 +18,11 @@ show data_directory; -- Lista Diretório da Instalação
 \d Produto -- Traz a descrição da tabela
 \x -- Alterna visualização para vertical
 \timing -- Habilita visualização do tempo executado das querys
+
+
+-- Iniciando ou Parando Serviço do Banco PostgreSQL via CMD (START ou STOP)
+C:\Program Files\PostgreSQL\11\bin>pg_ctl -D "C:\Program Files\PostgreSQL\11\data" stop
+esperando o servidor desligar....feito
+servidor está parado
+
+C:\Program Files\PostgreSQL\11\bin>
