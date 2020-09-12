@@ -345,3 +345,10 @@ CREATE SEQUENCE dev."Tabela_Serial_id_tab_serial_seq"
     MINVALUE 1
     MAXVALUE 2147483647
     CACHE 1;
+
+-- Inserindo e Consultando os Registros cadastrados
+insert into dev."Tabela_Serial" (nome) values ('Cadastro 01');
+insert into dev."Tabela_Serial" (nome) values ('Cadastro 02');
+insert into dev."Tabela_Serial" (nome) values ('Cadastro 03');
+select * from dev."Tabela_Serial";
+
