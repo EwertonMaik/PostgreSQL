@@ -1,1 +1,20 @@
 --Comandos
+
+-- Visualisar todos comandos Psql
+\?
+\h CREATE TABLE -- Ou CREATE outro Objeto, traz as informações de nomenclatura
+
+-- Parar conexão via ssh ou terminal
+psql -U postgres - h localhost
+
+-- Verificar Versão
+select version();
+
+show data_directory; -- Lista Diretório da Instalação
+\l+ ou \l-- Lista Bancos de Dados e suas informações
+\q -- Sair
+\c DEV -- Conectando na Base DEV
+\dt -- Lista Tabelas do Banco
+\d Produto -- Traz a descrição da tabela
+\x -- Alterna visualização para vertical
+\timing -- Habilita visualização do tempo executado das querys
