@@ -303,3 +303,45 @@ call dev.proc_del_prod(1);
 
 --Conferindo na tabela de Log
 select * from dev.Produto_Log_Auditoria;
+
+-- Criado uma Sequencia para controlar o Incremento em uma tabela
+CREATE SEQUENCE dev.seq_tab_cadastro
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 100
+    CACHE 1;
+ALTER SEQUENCE dev.seq_tab_cadastro
+    OWNER TO "User_DEV";
+
+-- Criado uma tabela onde seu campo id é defaul por uma sequence
+CREATE TABLE dev.cadastro_seq (
+    id_cad integer NOT NULL DEFAULT nextval('dev.seq_tab_cadastro'),
+    nome character varying(100) NOT NULL
+) WITH ( OIDS = FALSE) TABLESPACE "pgTB_DEV";
+ALTER TABLE dev.cadastro_seq
+    OWNER to "User_DEV";
+
+-- Inserindo registros na tabela
+insert into dev.cadastro_seq (nome) values ('Cadastro 01');
+insert into dev.cadastro_seq (nome) values ('Cadastro 02');
+insert into dev.cadastro_seq (nome) values ('Cadastro 03');
+
+--Verificando tabela com campo Id Default sequence
+select * from dev.cadastro_seq;
+
+-- Criando uma tabela com o Type de Dados SERIAL, onde é criado uma sequence por automático 
+CREATE TABLE dev."Tabela_Serial" (
+	id_tab_serial serial NOT NULL,
+    nome character varying(100) NOT NULL
+) WITH ( OIDS = FALSE) TABLESPACE "pgTB_DEV";
+ALTER TABLE dev.cadastro_seq
+    OWNER to "User_DEV";
+
+--Na aba de sequence fora criado automáticamente o objeto - Tabela_Serial_id_tab_serial_seq
+CREATE SEQUENCE dev."Tabela_Serial_id_tab_serial_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
